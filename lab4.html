@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Profile Page</title>
+<style>
+  .container {
+    position: relative;
+    width: 50%;
+  }
+
+  .image {
+    opacity: 1;
+    display: block;
+    width: 512px;
+    height: 512px;
+    transition: .5s ease;
+    backface-visibility: hidden;
+  }
+
+  .middle {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 85%;
+    left: 256px;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .container:hover .image {
+    opacity: 1;
+  }
+
+  .container:hover .middle {
+    opacity: 0.9;
+  }
+
+  .text {
+    background-color: #04AA6D;
+    color: white;
+    font-size: 16px;
+    padding: 16px 32px;
+  }
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <img class="image" src="profile.png" title="My profile pic" usemap="#facemap">
+    <map name="facemap">
+    <area shape="poly" coords="202,148,307,149,322,216,302,274,202,268,187,205" alt="Face" href="https://facebook.com">
+    </map>
+    <div class="middle"><div class="text">John Doe</div></div>
+
+  </div>
+
+</body>
+</html>
