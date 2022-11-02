@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>lab5</title>
+    <script src="script.js"></script>
+    <style>
+      table, th, td{
+        border: 1px solid black;
+
+      }
+
+      #subject {
+        width: 600px;
+        background-color: yellow;
+      }
+
+      th {
+        background-color: blue;
+
+      }
+
+      .green {
+        background-color: green;
+        height: 50px;
+        width: 100px;
+      }
+
+      .grey {
+        background-color: grey;
+        height: 50px;
+        width: 100px;
+      }
+
+      .red {
+        background-color: red;
+        height: 50px;
+        width: 100px;
+      }
+
+      .blue {
+        background-color: blue;
+        height: 50px;
+        width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="subject">
+      <tr>
+        <th>Math</th>
+        <th>English</th>
+        <th>Programming</th>
+      </tr>
+      <tr>
+        <td>90</td>
+        <td>60</td>
+        <td>80</td>
+      </tr>
+      <tr>
+        <td>80</td>
+        <td>86</td>
+        <td>98</td>
+      </tr>
+    </table>
+    Change The Table width
+    <p>
+      <button type="button" onclick="to200px()">200px</button>
+      <button type="button" onclick="to500px()">500px</button>
+    </p>
+    Change The Border and spacing width
+    <p>
+      <button type="button" onclick="to1px()">1px</button>
+      <button type="button" onclick="to10px()">10px</button>
+      <button type="button" onclick="to20px()">20px</button>
+    </p>
+    Change The Table color
+    <p>
+      <button type="button" onclick="toGreen()" class="green"></button>
+      <button type="button" onclick="toGrey()" class="grey"></button>
+      <button type="button" onclick="toRed()" class="red"></button>
+      <button type="button" onclick="toBlue()" class="blue"></button>
+    </p>
+
+    <button type="button" onclick="reset()">Reset</button>
+
+
+
+  </body>
+</html>
