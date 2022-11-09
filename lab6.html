@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #f1f1f1;
+}
+</style>
+</head>
+<body onload="startGame()">
+<script>
+
+var redGamePiece, blueGamePiece, yellowGamePiece;
+
+
+function startGame() {
+    redGamePiece = new component(75, 75, "red", 10, 10);
+    yellowGamePiece = new component(75, 75, "yellow", 50, 60);
+    blueGamePiece = new component(75, 75, "blue", 10, 190);
+    myGameArea.start();
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 480;
+        this.canvas.height = 270;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 20);
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function component(width, height, color, x, y) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.speed_x = 2;
+    this.speed_y = 2;
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+function updateGameArea() {
+    myGameArea.clear();
+
+    if (redGamePiece.x > (480-redGamePiece.width) || redGamePiece.x < 0 ){
+      redGamePiece.speed_x = -redGamePiece.speed_x;
+    }
+    redGamePiece.x += redGamePiece.speed_x;
+
+    if (yellowGamePiece.x > (480-yellowGamePiece.width) || yellowGamePiece.x < 0 ){
+      yellowGamePiece.speed_x = -yellowGamePiece.speed_x;
+    }
+    yellowGamePiece.x += yellowGamePiece.speed_x;
+
+    if (yellowGamePiece.y > (270-yellowGamePiece.height) || yellowGamePiece.y < 0 ){
+      yellowGamePiece.speed_y = -yellowGamePiece.speed_y;
+    }
+    yellowGamePiece.y += yellowGamePiece.speed_y;
+
+    if (blueGamePiece.x > (480-blueGamePiece.width) || blueGamePiece.x < 0 ){
+      blueGamePiece.speed_x = -blueGamePiece.speed_x;
+    }
+    blueGamePiece.x += blueGamePiece.speed_x;
+
+    if (blueGamePiece.y > (270-blueGamePiece.height) || blueGamePiece.y < 0 ){
+      blueGamePiece.speed_y = -blueGamePiece.speed_y;
+    }
+    blueGamePiece.y -= blueGamePiece.speed_y;
+
+    redGamePiece.update();
+    yellowGamePiece.update();
+    blueGamePiece.update();
+}
+</script>
+<p>The three components moves by changing the x- and y-coordinates on every update.</p>
+</body>
+</html>
