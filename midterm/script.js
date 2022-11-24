@@ -4,26 +4,21 @@ function component(name, x, y) {
     this.name = name;
     this.x = x;
     this.y = y;
-    this.speed_x = 0;
     this.speed_y = 30;
+    this.color = "#" + randomLetter(colorlist);
     this.rotate_flag = 0;
     this.old_flag = 0;
 
-    //small adjust to align shape to grid after rotation
+    //small adjustment to align shape to grid
     this.adjust = function(){
-        if ((this.name == "o") && (this.y < 0) ){
+        if ((this.name == "o"||this.name == "l") && (this.y < 0) && (this.x == 135)){
             // console.log(this.y);
             this.x += 15;
             return;
         }
-
-        // if ((this.name == "E" || this.name == "S"|| this.name == "l") && (this.y < 15) ){
-        //     // console.log(this.y);
-        //     this.y -= 15;
-        //     return;
-        // }
-
-        if ((this.name == "E" || this.name == "S" || this.name == "o" || this.name == "l") ){
+        
+        //ignore these shape
+        if ((this.name == "E" || this.name == "S") ){
             return;
         }
 
@@ -31,7 +26,7 @@ function component(name, x, y) {
             this.old_flag = this.rotate_flag;
             if (this.rotate_flag == 1|| this.rotate_flag == 0){
                 this.x += 15;
-                this.y -= 15;
+                this.y += 15;
             }
             else if (this.rotate_flag == 2 || this.rotate_flag == 3){
                 this.x -= 15;
@@ -39,6 +34,14 @@ function component(name, x, y) {
             }
             return;
         }
+    }
+
+    this.selected = function(){
+        ctx = myGameArea.context;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'red';
+        ctx.strokeRect(this.x - (0.5*this.width), this.y - (0.5*this.height), this.width, this.height);
+
     }
 
     this.update = function(){
@@ -137,8 +140,16 @@ function component(name, x, y) {
                 break;
                 
             case "o":
-                ctx.fillRect(-30, -30, 60, 60);
-                ctx.strokeRect(-30, -30, 60, 60);
+                ctx.beginPath();
+                ctx.moveTo(-30, -30);
+                ctx.lineTo(30, -30);
+                ctx.lineTo(30, 30);
+                ctx.lineTo(-30, 30);
+                ctx.lineTo(-30, -30);
+                ctx.closePath();
+                // ctx.fillRect(-30, -30, 60, 60);
+                
+                // ctx.strokeRect(-30, -30, 60, 60);
                 this.width = 60;
                 this.height = 60;
                 break;
@@ -184,7 +195,7 @@ function component(name, x, y) {
                 break;
             
             case "l":
-                ctx.translate(15, 0);
+                // ctx.translate(15, 0);
                 this.width = 60;
                 this.height = 90;
                 if (this.rotate_flag == 1 || this.rotate_flag == 3){
@@ -203,8 +214,9 @@ function component(name, x, y) {
                 break;
         }
         ctx.restore();
-        ctx.fillStyle = '#8ED6FF';
+        ctx.fillStyle = this.color;
         ctx.fill();
+        ctx.fillStyle = null;
         // ctx.lineWidth = 1.2;
         // ctx.strokeStyle = 'black';
         // ctx.stroke();
@@ -230,7 +242,11 @@ function component(name, x, y) {
     }
 }
 
+//colors from https://mui.com/material-ui/customization/color/
+const colorlist = ["aa2e25", "a31545", "6d1b7b", "482880", "2c387e", "1769aa", "0276aa", "008394", "00695f", "357a38", 
+"618833", "8f9a27", "b2a429", "b28704", "b26a00", "b23c17"];
 
+//copied from somewhere
 function randomLetter(arr){
     const randomIndex = Math.floor(Math.random() * arr.length);
     // get random item
@@ -238,7 +254,6 @@ function randomLetter(arr){
     return item;
 }
 
-//for properly aligning bottom of tetris block with top of canvas
 function adjHeight(name){
     switch (name){
         case "C":
