@@ -17,8 +17,8 @@ function component(name, x, y) {
             return;
         }
         
-        //ignore these shape
-        if ((this.name == "E" || this.name == "S") ){
+        //ignore the following code section for these 3 shapes 
+        if (this.name == "E" || this.name == "S" || this.name =="o"){
             return;
         }
 
@@ -254,6 +254,7 @@ function randomLetter(arr){
     return item;
 }
 
+//ensure the tetris block bottom is placed on the top border of canvas 
 function adjHeight(name){
     switch (name){
         case "C":
