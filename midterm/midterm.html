@@ -1,22 +1,21 @@
-<!--index.html-->
+<!DOCTYPE html>
 <html>
 <head>
-<style>
-    canvas {
-        background: #f1f1f1;
-        float: left;
-    }
-
-    #score {
-        background:  #ffffff;
-    }
-
-</style>
+    <title>Falling Tetris Blocks</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body onload="initialGame()">
 <script src="script.js"></script> 
 <script>
+var i = 0;
+var pieceArray = [];
+var piecePointer;
+var startlist = ["S", "I", "E"];
+var namelist = ["C", "S", "I", "E", "o", "t", "z", "l"];
+var timecounter = 0;
+var num = 0
+
 
 function initialGame(){
     myGameArea.initial();
@@ -25,19 +24,31 @@ function initialGame(){
 
 function startGame() {
     pieceArray = [];
+    piecePointer = null;
     var startlist = ["S", "I", "E"];
     num = 0;
     clearInterval(myGameArea.interval);
+    clearInterval(scoreInterval);
     myGameArea.start();
 }
 
 var myGameArea = {
+    // container : document.createElement("div"),
+    // gridDiv : document.createElement("div"),
     canvas : document.createElement("canvas"),
+    // scoreCanvas: document.createElement("canvas"),
     initial : function(){
         this.canvas.width = 300;
         this.canvas.height = 540;
         this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+
+        // this.scoreCanvas.width = 300;
+        // this.scoreCanvas.height = 100;
+
+        // this.container.setAttribute('id', 'container');
+        // this.gridDiv.setAttribute('id', 'gridarea');
+        // document.body.insertBefore(this.container, document.body.childNodes[0]);
+        document.getElementById("grid_column").appendChild(this.canvas);
     },
     start : function() {
         this.interval = setInterval(updateGameArea, 50);
@@ -74,62 +85,73 @@ function drawBoard(){
 }
 
 
-var i = 0;
-var pieceArray = [];
-var piecePointer;
-var startlist = ["S", "I", "E"];
-var namelist = ["C", "S", "I", "E", "o", "t", "z", "l"];
-var timecounter = 0;
-var num = 0
 
 
 function updateGameArea() {
     var name = "";
     var h = 0;
-    if (timecounter == 20){
-        myGameArea.clear();
-        drawBoard();
-        
 
-        if (pieceArray.length == 0){
-            pieceArray.push(new component("C", 135, -60));
-            i = 0
-            num++;
+    myGameArea.clear();
+    drawBoard();
+    
+
+    if (pieceArray.length == 0){
+        pieceArray.push(new component("C", 135, -60));
+        num++;
+    }
+
+    //when tetris block has passed 5 grid unit blocks, generates a new tetris block
+    if ((pieceArray[pieceArray.length-1].y - (0.5*pieceArray[pieceArray.length-1].height)) >= 150){
+        if (startlist.length > 0){
+            // i++;
+            name = startlist.shift();
+            h = adjHeight(name);
+            pieceArray.push(new component(name, 135, h));
+            // pieceArray[i] = new component(name, 135, h);
         }
-
-        if ((pieceArray[i].y - (0.5*pieceArray[i].height)) >= 150){
-            if (startlist.length > 0){
-                i++;
-                name = startlist.shift();
-                h = adjHeight(name);
-                pieceArray[i] = new component(name, 135, h);
-            }
-            else{
-                if (i < 5){
-                    i++;
-                }
-                else{
-                    i = 0;
-                }
-                name = randomLetter(namelist);
-                h = adjHeight(name);
-                pieceArray[i] = new component(name, 135, h);
-                // pieceArray.push(new component(randomLetter(namelist), 135, 0));
-            }
-            num++;
+        else{
+            name = randomLetter(namelist);
+            h = adjHeight(name);
+            pieceArray.push(new component(name, 135, h));
             // if (i < 5){
-            //     i += 1;
+            //     i++;
             // }
             // else{
-            //     pieceArray.shift();
+            //     i = 0;
             // }
+            // name = randomLetter(namelist);
+            // h = adjHeight(name);
+            // pieceArray[i] = new component(name, 135, h);
+            // // pieceArray.push(new component(randomLetter(namelist), 135, 0));
         }
-        
+
+        if (pieceArray.length > 4){
+            pieceArray.shift();
+        }
+        num++;
         // if (i < 5){
-        for (let j = 0; j < pieceArray.length; j++){
-            pieceArray[j].update();
-            pieceArray[j].newPos();
+        //     i += 1;
+        // }
+        // else{
+        //     pieceArray.shift();
+        // }
+    }
+    
+    // if (i < 5){
+    for (let j = 0; j < pieceArray.length; j++){
+        try{
+            if (((pieceArray[j].x - (0.5*pieceArray[j].width)) >= 0) && ((pieceArray[j].x + (0.5*pieceArray[j].width)) <= myGameArea.canvas.width))
+                continue;
+            else if ((pieceArray[j].x - (0.5*pieceArray[j].width)) <= 0)
+                pieceArray[j].x = 0.5*pieceArray[j].width;
+            else if ((pieceArray[j].x + (0.5*pieceArray[j].width)) >= myGameArea.canvas.width)
+                pieceArray[j].x = myGameArea.canvas.width - 0.5*pieceArray[j].width;
         }
+        finally{
+            pieceArray[j].update();
+        }
+
+    }
         // }
         // else{
         //     for (let j = 3; j < pieceArray.length; j++){
@@ -137,7 +159,10 @@ function updateGameArea() {
         //         pieceArray[j].update();
         //     }
         // }
-        
+    if (timecounter == 20){
+        for (let j = 0; j < pieceArray.length; j++){
+            pieceArray[j].newPos();
+        }
         timecounter = 0;
     }
     else
@@ -152,7 +177,9 @@ function updateGameArea() {
     }
 
     try{
-        if (piecePointer.y > 540){
+        piecePointer.selected();
+
+        if (piecePointer.y - (0.5*piecePointer.height) > 540){
             // console.log(piecePointer.name);
             piecePointer = null;
         }
@@ -165,17 +192,23 @@ function updateGameArea() {
 
 function Left(piecePointer){
     // console.log((piecePointer.x - (0.5*piecePointer.width)));
-    if ((piecePointer.x - (0.5*piecePointer.width)) == 0)
-        return;
-    else
-        piecePointer.x -= 30;
+    // if ((piecePointer.x - (0.5*piecePointer.width)) <= 0){
+    //     piecePointer.x = 0.5*piecePointer.width;
+    //     return;
+    // }
+    // else
+    piecePointer.x -= 30;
+    // return;
 }
 
 function Right(piecePointer){   
-    if ((piecePointer.x + (0.5*piecePointer.width)) == 300)
-        return;
-    else    
-        piecePointer.x += 30;
+    // if ((piecePointer.x + (0.5*piecePointer.width)) >= myGameArea.canvas.width){
+    //     piecePointer.x = 300 - 0.5*piecePointer.width;
+    //     return;
+    // }
+    // else    
+    piecePointer.x += 30;
+    // return;
 }
 
 function Down(piecePointer){   
@@ -185,31 +218,58 @@ function Down(piecePointer){
 function Rotate(piecePointer){
     piecePointer.rotate_flag = (piecePointer.rotate_flag + 1) % 4 ;
 
+    // if ((piecePointer.x - (0.5*piecePointer.width)) <= 0){
+    //     piecePointer.x = 0.5*piecePointer.width;
+    //     return;
+    // }
+    // if ((piecePointer.x + (0.5*piecePointer.width)) >= myGameArea.canvas.width){
+    //     piecePointer.x = 300 - 0.5*piecePointer.width;
+    //     return;
+    // }
 }
-
-
-
 </script>
-    <div class="command_column">
-        <canvas id="score" width="300" height="50" style="border:1px solid #110f0f;"></canvas>
-        <script>
-            var s = document.getElementById("score");
-            var s_ctx = s.getContext("2d");
-            s_ctx.font = "25px Arial";
-            
-            let id = null;
-            id = setInterval(updateScore, 1000);            
-            function updateScore(){
-                s_ctx.clearRect(0, 0, 300, 50);
-                s_ctx.fillText("Score: " + num, 130, 25);
-            }
-            
-        </script>
-        <button onclick="startGame()" class="play-button">Play</button>
-        <button onclick="Left(piecePointer)" class="play-button">Left</button>
-        <button onclick="Right(piecePointer)" class="play-button">Right</button>
-        <button onclick="Down(piecePointer)" class="play-button">Down</button>
-        <button onclick="Rotate(piecePointer)" class="play-button">Rotate</button>
+
+    <div class="container">
+        <div id="grid_column">
+        </div>
+        <div id="command_column">
+            <canvas id="score" width="320" height="80""></canvas>
+            <script>
+                var s = document.getElementById("score");
+                var s_ctx = s.getContext("2d");
+                s_ctx.font = "25px Helvetica";
+                const titletext1 = "Falling Tetris Blocks"
+                const titletext2 = "Simulator 2022"
+
+                const len1 = s_ctx.measureText(titletext1).width;
+                const len2 = s_ctx.measureText(titletext2).width;
+                var margin_to_add = (len1-len2)*0.5;
+
+                s_ctx.fillText(titletext1, (0.5*(s.width-len1)), 35);
+                s_ctx.fillText(titletext2, (0.5*(s.width-len2)), 65);
+                
+                let scoreInterval = null;
+                // scoreInterval = setInterval(updateScore, 50);     
+                function startInterval(scoreInterval){
+                    scoreInterval = setInterval(updateScore, 50); 
+                }
+                
+                function updateScore(){
+                    var scoretext = "Score: " + num;
+                    var len3 = s_ctx.measureText(scoretext).width;
+                    s_ctx.clearRect(0, 0, s.width, s.height);
+                    s_ctx.fillText(scoretext, (0.5*(s.width-len3)), 0.5*s.height+10);
+                }
+                
+            </script>
+            <div id="buttons">
+                <button onclick="startGame(), startInterval(scoreInterval)" class="play-button">Play/Reset</button>
+                <button onclick="Left(piecePointer)" class="play-button">Left</button>
+                <button onclick="Right(piecePointer)" class="play-button">Right</button>
+                <button onclick="Down(piecePointer)" class="play-button">Down</button>
+                <button onclick="Rotate(piecePointer)" class="play-button">Rotate</button>
+            </div>
+                
+        </div>
     </div>
-    
 </body>
