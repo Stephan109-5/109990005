@@ -84,9 +84,6 @@ function drawBoard(){
     context.stroke();
 }
 
-
-
-
 function updateGameArea() {
     var name = "";
     var h = 0;
@@ -263,11 +260,11 @@ function Rotate(piecePointer){
                 
             </script>
             <div id="buttons">
-                <button onclick="startGame(), startInterval(scoreInterval)" class="play-button">Play/Reset</button>
-                <button onclick="Left(piecePointer)" class="play-button">Left</button>
-                <button onclick="Right(piecePointer)" class="play-button">Right</button>
-                <button onclick="Down(piecePointer)" class="play-button">Down</button>
-                <button onclick="Rotate(piecePointer)" class="play-button">Rotate</button>
+                <button onclick="startGame(), startInterval(scoreInterval)" id="play"><img src="https://cdn-icons-png.flaticon.com/512/727/727245.png"></button>
+                <button onclick="Left(piecePointer)" id="left"><img src="https://cdn-icons-png.flaticon.com/512/271/271226.png"></button>
+                <button onclick="Right(piecePointer)" id="right"><img src="https://cdn-icons-png.flaticon.com/512/271/271226.png"></button>
+                <button onclick="Down(piecePointer)" id="down"><img src="https://cdn-icons-png.flaticon.com/512/271/271226.png"></button>
+                <button onclick="Rotate(piecePointer)" id="rotate"><img src="https://cdn-icons-png.flaticon.com/512/50/50453.png"></button>
             </div>
                 
         </div>
