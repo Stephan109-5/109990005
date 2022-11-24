@@ -235,12 +235,14 @@ function pauseGame(){
         for (let j = 0; j < pieceArray.length; j++){
             pieceArray[j].speed_y = 0;
         }
+        pause_state = true;
         toggle = true;
     }
     else{
         for (let j = 0; j < pieceArray.length; j++){
             pieceArray[j].speed_y = 30;
         }
+        pause_state = false;
         toggle = false;
     }
 }
@@ -267,7 +269,7 @@ function pauseGame(){
                 
                 let scoreInterval = null;
                 // scoreInterval = setInterval(updateScore, 50);     
-                function startInterval(scoreInterval){
+                function startInterval(){
                     scoreInterval = setInterval(updateScore, 50); 
                 }
                 
