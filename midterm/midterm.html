@@ -1,0 +1,215 @@
+<!--index.html-->
+<html>
+<head>
+<style>
+    canvas {
+        background: #f1f1f1;
+        float: left;
+    }
+
+    #score {
+        background:  #ffffff;
+    }
+
+</style>
+</head>
+
+<body onload="initialGame()">
+<script src="script.js"></script> 
+<script>
+
+function initialGame(){
+    myGameArea.initial();
+    drawBoard();
+}
+
+function startGame() {
+    pieceArray = [];
+    var startlist = ["S", "I", "E"];
+    num = 0;
+    clearInterval(myGameArea.interval);
+    myGameArea.start();
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    initial : function(){
+        this.canvas.width = 300;
+        this.canvas.height = 540;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+    },
+    start : function() {
+        this.interval = setInterval(updateGameArea, 50);
+        window.addEventListener('mousedown', function (e) {
+            myGameArea.x = e.pageX;
+            myGameArea.y = e.pageY;
+        })
+        window.addEventListener('mouseup', function (e) {
+            myGameArea.x = false;
+            myGameArea.y = false;
+        })
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+var context = myGameArea.canvas.getContext("2d");
+function drawBoard(){
+    context.strokeStyle = "white";
+    context.lineWidth = 0.5; 
+    for (var x = 0; x <= myGameArea.canvas.width; x += 30) {
+        context.moveTo(x, 0);
+        context.lineTo(x, myGameArea.canvas.height);
+    }
+
+    for (var x = 0; x <= myGameArea.canvas.height; x += 30) {
+        context.moveTo(0, x);
+        context.lineTo(myGameArea.canvas.width , x);
+    }
+    context.strokeStyle = "white";
+    context.lineWidth = 0.5; 
+    context.stroke();
+}
+
+
+var i = 0;
+var pieceArray = [];
+var piecePointer;
+var startlist = ["S", "I", "E"];
+var namelist = ["C", "S", "I", "E", "o", "t", "z", "l"];
+var timecounter = 0;
+var num = 0
+
+
+function updateGameArea() {
+    var name = "";
+    var h = 0;
+    if (timecounter == 20){
+        myGameArea.clear();
+        drawBoard();
+        
+
+        if (pieceArray.length == 0){
+            pieceArray.push(new component("C", 135, -60));
+            i = 0
+            num++;
+        }
+
+        if ((pieceArray[i].y - (0.5*pieceArray[i].height)) >= 150){
+            if (startlist.length > 0){
+                i++;
+                name = startlist.shift();
+                h = adjHeight(name);
+                pieceArray[i] = new component(name, 135, h);
+            }
+            else{
+                if (i < 5){
+                    i++;
+                }
+                else{
+                    i = 0;
+                }
+                name = randomLetter(namelist);
+                h = adjHeight(name);
+                pieceArray[i] = new component(name, 135, h);
+                // pieceArray.push(new component(randomLetter(namelist), 135, 0));
+            }
+            num++;
+            // if (i < 5){
+            //     i += 1;
+            // }
+            // else{
+            //     pieceArray.shift();
+            // }
+        }
+        
+        // if (i < 5){
+        for (let j = 0; j < pieceArray.length; j++){
+            pieceArray[j].update();
+            pieceArray[j].newPos();
+        }
+        // }
+        // else{
+        //     for (let j = 3; j < pieceArray.length; j++){
+        //         pieceArray[j].newPos();
+        //         pieceArray[j].update();
+        //     }
+        // }
+        
+        timecounter = 0;
+    }
+    else
+        timecounter++;
+
+    for (let j = 0; j < pieceArray.length; j++){
+        if (myGameArea.x && myGameArea.y) {
+            if (pieceArray[j].clicked()){
+                piecePointer = pieceArray[j];
+            }
+        }
+    }
+
+    try{
+        if (piecePointer.y > 540){
+            // console.log(piecePointer.name);
+            piecePointer = null;
+        }
+    }
+    catch(err){
+
+    }
+    
+}
+
+function Left(piecePointer){
+    // console.log((piecePointer.x - (0.5*piecePointer.width)));
+    if ((piecePointer.x - (0.5*piecePointer.width)) == 0)
+        return;
+    else
+        piecePointer.x -= 30;
+}
+
+function Right(piecePointer){   
+    if ((piecePointer.x + (0.5*piecePointer.width)) == 300)
+        return;
+    else    
+        piecePointer.x += 30;
+}
+
+function Down(piecePointer){   
+    piecePointer.y += 30;
+}
+
+function Rotate(piecePointer){
+    piecePointer.rotate_flag = (piecePointer.rotate_flag + 1) % 4 ;
+
+}
+
+
+
+</script>
+    <div class="command_column">
+        <canvas id="score" width="300" height="50" style="border:1px solid #110f0f;"></canvas>
+        <script>
+            var s = document.getElementById("score");
+            var s_ctx = s.getContext("2d");
+            s_ctx.font = "25px Arial";
+            
+            let id = null;
+            id = setInterval(updateScore, 1000);            
+            function updateScore(){
+                s_ctx.clearRect(0, 0, 300, 50);
+                s_ctx.fillText("Score: " + num, 130, 25);
+            }
+            
+        </script>
+        <button onclick="startGame()" class="play-button">Play</button>
+        <button onclick="Left(piecePointer)" class="play-button">Left</button>
+        <button onclick="Right(piecePointer)" class="play-button">Right</button>
+        <button onclick="Down(piecePointer)" class="play-button">Down</button>
+        <button onclick="Rotate(piecePointer)" class="play-button">Rotate</button>
+    </div>
+    
+</body>
