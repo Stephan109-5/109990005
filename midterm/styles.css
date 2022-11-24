@@ -29,6 +29,22 @@
     align-items: center; 
 }
 
+img{
+    width: 30px;
+    height: 30px;
+
+}
+
+#left img{
+    transform: scaleX(-1);
+}
+
+#down img{
+    transform: rotate(90deg);
+}
+
 button{
     margin: 5px;
+    justify-content: center;
+    align-items: center; 
 }
