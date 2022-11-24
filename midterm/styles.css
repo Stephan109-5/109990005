@@ -13,10 +13,12 @@
 }
 
 #command_column{
+    width: 320px;
     padding: 10px;
     float: left;
     justify-content: center;
     align-items: center; 
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 #score{
