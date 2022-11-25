@@ -1,50 +1,60 @@
 .container{
     display: flex;
-    /* justify-content: center; */
-    align-items: center; 
-    background-color: darkturquoise;
+    width: 665px;
 }
 
 body {
-    background-color: darkturquoise;
+    background-color: #2F4F4F;
+    /* background-image: url('https://wallpaperaccess.com/full/1205510.jpg');
+    background-size: 1500px; */
 }
 
 #grid_column{
+    border: solid 3px black;
+    box-shadow: 5px 10px 5px rgba(0, 0, 0, 0.6);
     float:left;
-    padding: 10px;
+    height: 540px;
 }
 
 #grid_column canvas {
-    border: solid 3px black;
     background: #f1f1f1;
-    
 }
 
 #command_column{
-    background-color: turquoise;
-    width: 320px;
-    padding: 10px;
-    float: left;
-    justify-content: center;
     align-items: center; 
+    background-color: #40e0d0;
+    border: solid 3px black;
+    box-shadow: 5px 10px 5px rgba(0, 0, 0, 0.6);
+    float: left;
     font-family: Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    justify-content: center;
+    margin-left: 10px;
+    text-align: center;
+    width: 390px;
+    height: 540px;
 }
 
 #score{
-    /* border: solid 1px black; */
-    margin-top: 135px;
+    background-color: #AFEEEE;
+    border: solid 2px black;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
 #buttons{
     display: flex;
     justify-content: center;
     align-items: center; 
+    padding: 5px;
 }
 
 #buttons img{
     width: 30px;
     height: 30px;
     padding: 5px;
+    pointer-events: none;
 }
 
 #left img{
@@ -58,25 +68,72 @@ body {
 button{
     margin: 5px;
     justify-content: center;
+    text-align: center;
     align-items: center;
-    background-color: limegreen ;
     border-radius: 5px 5px;
     border: none;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
     transition: all 0.3s ease 0s;
     cursor: pointer;
     outline: none;
 }
 
 button:hover {
-    background-color: #ADFF2F;
     box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.4);
-    color: #fff;
     transform: translateY(-2px);
   }
 
 button:active {
-    background-color: #228B22;
-    box-shadow: 0 7px #006400;
-    transform: translateY(4px);
+    transform: translateY(3px);
+}
+
+#play {
+    background-color: #FF3213;
+}
+
+#play:hover{
+    background-color: #FF705A;
+}
+
+#play:active{
+    background-color: #CC280F;
+    box-shadow: 0 4px #661408;
+}
+
+#left, #down, #right, #rotate {
+    background-color: #72CB3B;
+}
+
+#left:hover, #down:hover, #right:hover, #rotate:hover{
+    background-color: #9CDB76;
+}
+
+#left:active, #down:active, #right:active, #rotate:active{
+    background-color: #5BA22F;
+    box-shadow: 0 4px #2E5118;
+}
+
+#reset {
+    background-color: #FFD500;
+}
+
+#reset:hover{
+    background-color: #FFE24D;
+}
+
+#reset:active{
+    background-color: #CCAA00;
+    box-shadow: 0 4px #665500;
+}
+
+h3, p, hr{
+    text-align: left;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+#instr{
+    margin-bottom: 15px;
 }
