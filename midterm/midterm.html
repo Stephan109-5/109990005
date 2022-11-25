@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Falling Tetris Blocks</title>
+    <title>Falling Tetris Blocks Simulator 2022</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -10,12 +10,14 @@
 <script>
 var i = 0;
 var pieceArray = [];
-var piecePointer;
+var piecePointer = null;
+var nextPiece = null;
 var startlist = ["S", "I", "E"];
 var namelist = ["C", "S", "I", "E", "o", "t", "z", "l"];
 var timecounter = 0;
 var num = 0
-
+var scoreInterval = null;
+var copyPiece = null;
 
 function initialGame(){
     myGameArea.initial();
@@ -25,42 +27,40 @@ function initialGame(){
 function startGame() {
     pieceArray = [];
     piecePointer = null;
-    var startlist = ["S", "I", "E"];
+    nextPiece = null;
+    copyPiece = null;
+    startlist = ["S", "I", "E"];
     num = 0;
     clearInterval(myGameArea.interval);
     clearInterval(scoreInterval);
     myGameArea.start();
+    startInterval();
 }
 
 var myGameArea = {
-    // container : document.createElement("div"),
-    // gridDiv : document.createElement("div"),
     canvas : document.createElement("canvas"),
-    // scoreCanvas: document.createElement("canvas"),
+
     initial : function(){
         this.canvas.width = 300;
         this.canvas.height = 540;
         this.context = this.canvas.getContext("2d");
-
-        // this.scoreCanvas.width = 300;
-        // this.scoreCanvas.height = 100;
-
-        // this.container.setAttribute('id', 'container');
-        // this.gridDiv.setAttribute('id', 'gridarea');
-        // document.body.insertBefore(this.container, document.body.childNodes[0]);
         document.getElementById("grid_column").appendChild(this.canvas);
     },
+
     start : function() {
         this.interval = setInterval(updateGameArea, 50);
-        window.addEventListener('mousedown', function (e) {
-            myGameArea.x = e.pageX;
-            myGameArea.y = e.pageY;
+
+        this.canvas.addEventListener('click', function(e) {
+            myGameArea.x = e.pageX - 10;
+            myGameArea.y = e.pageY - 10;
         })
+
         window.addEventListener('mouseup', function (e) {
             myGameArea.x = false;
             myGameArea.y = false;
         })
     },
+
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
@@ -84,55 +84,39 @@ function drawBoard(){
 
 function updateGameArea() {
     var name = "";
-    var h = 0;
-
     myGameArea.clear();
     drawBoard();
     
-
+    //make first tetris block be 'C'
     if (pieceArray.length == 0){
-        pieceArray.push(new component("C", 135, -60));
+        pieceArray.push(new component("C", 135, -60, myGameArea.context));
         num++;
+        name = startlist.shift();
+        nextPiece = new component(name, 135, adjHeight(name), myGameArea.context);
     }
 
     //when tetris block has passed 5 grid unit blocks, generates a new tetris block
     if ((pieceArray[pieceArray.length-1].y - (0.5*pieceArray[pieceArray.length-1].height)) >= 150){
-        if (startlist.length > 0){
-            // i++;
-            name = startlist.shift();
-            h = adjHeight(name);
-            pieceArray.push(new component(name, 135, h));
-            // pieceArray[i] = new component(name, 135, h);
-        }
-        else{
-            name = randomLetter(namelist);
-            h = adjHeight(name);
-            pieceArray.push(new component(name, 135, h));
-            // if (i < 5){
-            //     i++;
-            // }
-            // else{
-            //     i = 0;
-            // }
-            // name = randomLetter(namelist);
-            // h = adjHeight(name);
-            // pieceArray[i] = new component(name, 135, h);
-            // // pieceArray.push(new component(randomLetter(namelist), 135, 0));
-        }
-
+        pieceArray.push(nextPiece);
+        
+        //limit size of pieceArray to 4
         if (pieceArray.length > 4){
             pieceArray.shift();
         }
         num++;
-        // if (i < 5){
-        //     i += 1;
-        // }
-        // else{
-        //     pieceArray.shift();
-        // }
+
+        //make 2nd-4th blocks be 'S', 'I', 'E'
+        if (startlist.length > 0){
+            name = startlist.shift();
+            nextPiece = new component(name, 135, adjHeight(name), myGameArea.context);
+        }
+        //random shape block
+        else{
+            name = randomLetter(namelist);
+            nextPiece = new component(name, 135, adjHeight(name), myGameArea.context);
+        }
     }
     
-    // if (i < 5){
     for (let j = 0; j < pieceArray.length; j++){
         try{
             if (((pieceArray[j].x - (0.5*pieceArray[j].width)) >= 0) && ((pieceArray[j].x + (0.5*pieceArray[j].width)) <= myGameArea.canvas.width))
@@ -145,15 +129,9 @@ function updateGameArea() {
         finally{
             pieceArray[j].update();
         }
-
     }
-        // }
-        // else{
-        //     for (let j = 3; j < pieceArray.length; j++){
-        //         pieceArray[j].newPos();
-        //         pieceArray[j].update();
-        //     }
-        // }
+
+    //make the tetris blocks fall after 20*interval_rate milliseconds 
     if (timecounter == 20){
         for (let j = 0; j < pieceArray.length; j++){
             pieceArray[j].newPos();
@@ -163,6 +141,7 @@ function updateGameArea() {
     else
         timecounter++;
 
+    //Detect if a tetris block is clicked
     for (let j = 0; j < pieceArray.length; j++){
         if (myGameArea.x && myGameArea.y) {
             if (pieceArray[j].clicked()){
@@ -172,10 +151,11 @@ function updateGameArea() {
     }
 
     try{
+        //highlight selected/clicked tetris block in red
         piecePointer.selected();
 
+        //if the tetris block has fallen out of 
         if (piecePointer.y - (0.5*piecePointer.height) > 540){
-            // console.log(piecePointer.name);
             piecePointer = null;
         }
     }
@@ -186,90 +166,105 @@ function updateGameArea() {
 }
 
 function Left(piecePointer){
-    // console.log((piecePointer.x - (0.5*piecePointer.width)));
-    // if ((piecePointer.x - (0.5*piecePointer.width)) <= 0){
-    //     piecePointer.x = 0.5*piecePointer.width;
-    //     return;
-    // }
-    // else
-    piecePointer.x -= 30;
-    // return;
+    if (piecePointer)
+        piecePointer.x -= 30;
 }
 
 function Right(piecePointer){   
-    // if ((piecePointer.x + (0.5*piecePointer.width)) >= myGameArea.canvas.width){
-    //     piecePointer.x = 300 - 0.5*piecePointer.width;
-    //     return;
-    // }
-    // else    
-    piecePointer.x += 30;
-    // return;
+    if (piecePointer)    
+        piecePointer.x += 30;
 }
 
 function Down(piecePointer){   
-    piecePointer.y += 30;
+    if (piecePointer)
+        piecePointer.y += 30;
 }
 
 function Rotate(piecePointer){
-    piecePointer.rotate_flag = (piecePointer.rotate_flag + 1) % 4 ;
-
-    // if ((piecePointer.x - (0.5*piecePointer.width)) <= 0){
-    //     piecePointer.x = 0.5*piecePointer.width;
-    //     return;
-    // }
-    // if ((piecePointer.x + (0.5*piecePointer.width)) >= myGameArea.canvas.width){
-    //     piecePointer.x = 300 - 0.5*piecePointer.width;
-    //     return;
-    // }
+    if (piecePointer)
+        piecePointer.rotate_flag = (piecePointer.rotate_flag + 1) % 4 ;
 }
+
+function Reset(){
+    num = 0;
+    myGameArea.clear();
+    drawBoard();
+    clearInterval(myGameArea.interval);
+    scoreArea_ctx.clearRect(0, 0, scoreArea.width, scoreArea.height);
+    scoreArea_ctx.fillText("Next Block: ", 0.01*scoreArea.width, 0.1*scoreArea.height);
+    scoreArea_ctx.fillText("Score: " + num, (0.5*(scoreArea.width-scoreArea_ctx.measureText("Score: " + num).width)), 0.97*scoreArea.height);
+    clearInterval(scoreInterval);
+}
+
 </script>
 
     <div class="container">
         <div id="grid_column">
         </div>
         <div id="command_column">
-            <canvas id="score" width="320" height="80""></canvas>
+            <canvas id="score" width="350" height="220""></canvas>
+            <!-- script mostly for the score canvas -->
             <script>
-                var s = document.getElementById("score");
-                var s_ctx = s.getContext("2d");
-                s_ctx.font = "25px Helvetica";
+                var scoreArea = document.getElementById("score");
+                var scoreArea_ctx = scoreArea.getContext("2d");
+                
+                scoreArea_ctx.font = "800 25px Helvetica";
+                const nexttext = "Next Block: ";
                 const titletext1 = "Falling Tetris Blocks"
                 const titletext2 = "Simulator 2022"
 
-                const len1 = s_ctx.measureText(titletext1).width;
-                const len2 = s_ctx.measureText(titletext2).width;
-                var margin_to_add = (len1-len2)*0.5;
-
-                s_ctx.fillText(titletext1, (0.5*(s.width-len1)), 35);
-                s_ctx.fillText(titletext2, (0.5*(s.width-len2)), 65);
+                //obtain some measurements to properly center text
+                const len1 = scoreArea_ctx.measureText(titletext1).width;
+                const len2 = scoreArea_ctx.measureText(titletext2).width;
+                scoreArea_ctx.fillText(titletext1, (0.5*(scoreArea.width-len1)), 35);
+                scoreArea_ctx.fillText(titletext2, (0.5*(scoreArea.width-len2)), 65);
                 
-                let scoreInterval = null;
-                // scoreInterval = setInterval(updateScore, 50);     
-                function startInterval(scoreInterval){
-                    scoreInterval = setInterval(updateScore, 50); 
+                function startInterval(){
+                    scoreInterval = setInterval(updateScore, 45); 
                 }
                 
                 function updateScore(){
+                    scoreArea_ctx.clearRect(0, 0, scoreArea.width, scoreArea.height);
+
+                    //preview the next tetris block to fall
+                    if (nextPiece){
+                        copyPiece = new component(nextPiece.name, 0.5*scoreArea.width, 0.47*scoreArea.height, scoreArea_ctx);
+                        copyPiece.color = nextPiece.color;
+                        copyPiece.update();
+                    }
+
                     var scoretext = "Score: " + num;
-                    var len3 = s_ctx.measureText(scoretext).width;
-                    s_ctx.clearRect(0, 0, s.width, s.height);
-                    s_ctx.fillText(scoretext, (0.5*(s.width-len3)), 0.5*s.height+10);
+                    var len3 = scoreArea_ctx.measureText(scoretext).width;
+                    scoreArea_ctx.fillText(nexttext, 0.01*scoreArea.width, 0.1*scoreArea.height);
+                    scoreArea_ctx.fillText(scoretext, (0.5*(scoreArea.width-len3)), 0.97*scoreArea.height);
                 }
                 
             </script>
+
             <div id="buttons">
-                <button onclick="startGame(), startInterval(scoreInterval)" id="play"><img src="https://cdn-icons-png.flaticon.com/512/727/727245.png"></button>
+                <button onclick="startGame()" id="play"><img src="https://cdn-icons-png.flaticon.com/512/727/727245.png"></button>
                 <button onclick="Left(piecePointer)" id="left"><img src="https://cdn-icons-png.flaticon.com/512/271/271226.png"></button>
                 <button onclick="Down(piecePointer)" id="down"><img src="https://cdn-icons-png.flaticon.com/512/271/271226.png"></button>
                 <button onclick="Right(piecePointer)" id="right"><img src="https://cdn-icons-png.flaticon.com/512/271/271226.png"></button>
                 <button onclick="Rotate(piecePointer)" id="rotate"><img src="https://cdn-icons-png.flaticon.com/512/50/50453.png"></button>
+                <button onclick="Reset()" id="reset"><img src="https://cdn-icons-png.flaticon.com/512/5267/5267861.png"></button>
                 
             </div>
             <hr>
             <h3>Instructions</h3>
-            <p>Click the Play button to start playing. The button can be clicked again to reset the game.
-                <br>You may also click any of the tetris blocks falling. After being clicked, it will be highlighted by a red box around its shape.
-                <br>The arrows and rotate buttons can be clicked to make the selected tetris block move in the desired direction or rotate.
+            <p id="instr">
+                Click the Play button to start playing. The button can be clicked again to restart the game.
+                <br>You can click any of the tetris blocks falling to select it. Once clicked, it will be highlighted by a red box around its shape.
+                <br>The arrows and rotate buttons can be clicked to make the selected tetris block move in the desired direction or rotate by 90 degrees.
+                <br>The Reset button resets the game grid and the game score.
+            </p>
+            <hr>
+            <p id="profile">
+                Web Progamming Midterm Project
+                <br>
+                Name: 謝恆興 Stephan Chia Yin Cheong
+                <br>
+                StudentID: 109990005
             </p>
         </div>
     </div>
