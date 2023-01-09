@@ -1,0 +1,20 @@
+body {
+	background: #1c1a1a;
+}
+
+App {
+	display: flex;
+	align-self: center;
+    justify-content: center;
+}
+
+.movie-app > .row {
+	overflow-x: auto;
+	flex-wrap: nowrap;
+}
+
+.layoutbox {
+	background-color: rgb(239, 231, 231);
+	margin-left: 5%;
+	margin-right: 5%;
+}

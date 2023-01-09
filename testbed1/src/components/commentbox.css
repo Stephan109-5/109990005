@@ -1,0 +1,12 @@
+.commentcontainer{
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    
+}
+
+.commentbox{
+    background-color: rgb(159, 144, 144);
+    width: 100%;
+    padding: 50px;
+}
